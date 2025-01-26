@@ -1,17 +1,34 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
     entry: './src/client/index.js',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'main.js',
+        libraryTarget: 'var',
+        library: 'Client'
+    },
     mode: 'development',
     devtool: 'source-map',
+    devServer: {
+        port: 8080,
+        static: path.resolve(__dirname, 'dist'),
+        hot: true,
+        open: true
+    },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loader: "babel-loader"
+            },
+            {
+                test: /\.scss$/,
+                use: [ 'style-loader', 'css-loader', 'sass-loader' ]
             }
         ]
     },
@@ -19,6 +36,12 @@ module.exports = {
         new HtmlWebPackPlugin({
             template: "./src/client/views/index.html",
             filename: "./index.html"
+        }),
+        new CleanWebpackPlugin({
+            dry: true,
+            verbose: true,
+            cleanStaleWebpackAssets: true,
+            protectWebpackAssets: false
         })
     ]
 }
